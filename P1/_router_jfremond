@@ -1,0 +1,4 @@
+FROM frrouting/frr:v8.4.0
+
+COPY confs/vtysh.conf /etc/frr/vtysh.conf
+COPY confs/daemons /etc/frr/daemons

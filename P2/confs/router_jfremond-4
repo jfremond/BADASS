@@ -1,0 +1,47 @@
+# pre-up: before interface is brought up
+# up: when interface is brought up
+# down: when interface is brought down
+# post-down: after interface is brought down
+
+# Static config for eth0
+auto eth0
+iface eth0 inet static
+	address 10.1.1.4
+	netmask 255.255.255.0
+
+# Manual config for eth1
+iface eth1 inet manual
+	# Add eth1 interface to bridge
+	pre-up brctl addif br0 "${IFACE}"
+	# Bring eth1 interface up
+	post-up ifconfig "${IFACE}" up
+	# Bring eth interface down
+	post-down ifconfig "${IFACE}" down
+
+# `vxlan10` interface
+iface vxlan10 inet manual
+	# multicast
+	# Create VXLAN tunnel interface between the two hosts
+	pre-up /sbin/ip link add "${IFACE}" type vxlan id 10 dev eth0 local 10.1.1.4 group 239.1.1.1 dstport 4789
+	# Add vxlan10 interface to brigde
+	pre-up brctl addif br0 "${IFACE}"
+	# Activate vxlan10 interface
+	up /sbin/ip link set "${IFACE}" up
+	# Delete vxlan10 interface
+	post-down /sbin/ip link del "${IFACE}"
+
+# `br0` interface
+iface br0 inet manual
+	# Create bridge
+	pre-up brctl addbr "${IFACE}"
+	# Bring bridge interface up
+	post-up ifconfig "${IFACE}" up
+	# Bring brigde interface down
+	down ifconfig "${IFACE}" down
+	# Delete bridge interface
+	post-down brctl delbr "${IFACE}"
+
+# To bring them up at boot time
+auto br0
+auto eth1
+auto vxlan10

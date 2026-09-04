@@ -1,0 +1,59 @@
+hostname jfremond-1
+no ipv6 forwarding
+!
+! Set properties for interface eth0
+!
+interface eth0
+	ip address 10.1.1.1/30
+
+!
+! Set properties for interface eth1
+!
+interface eth1
+	ip address 10.1.1.5/30
+
+!
+! Set properties for interface eth2
+!
+interface eth2
+	ip address 10.1.1.9/30
+
+!
+! Set properties for interface lo
+!
+interface lo
+	ip address 1.1.1.1/32
+
+!
+! Enable BGP
+!
+router bgp 1
+	! Define new peer group
+	neighbor ibgp peer-group
+	
+	! Create peer
+	neighbor ibgp remote-as internal
+
+	! Specify address to use for the BGP session
+	neighbor ibgp update-source lo
+	
+	! Accept connections from any peers in group "ibgp"
+	bgp listen range 1.1.1.0/29 peer-group ibgp
+	
+	! Configuration BGP EVPN options
+	address-family l2vpn evpn
+
+		! Enable EVPN for ibgp peer group
+		neighbor ibgp activate
+
+		! Config route reflector
+		neighbor ibgp route-reflector-client
+	exit-address-family
+
+!
+! Configuration OSPF
+!
+router ospf
+	! Advertise all networks into OSPF area 0 (backbone)
+	network 0.0.0.0/0 area 0
+!

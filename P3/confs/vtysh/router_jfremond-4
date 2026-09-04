@@ -1,0 +1,39 @@
+hostname jfremond-4
+no ipv6 forwarding
+
+!
+! Set properties for interface eth0
+!
+interface eth2
+ip address 10.1.1.10/30
+	! Enable ospf for interface
+	ip ospf area 0
+
+!
+! Set properties for interface lo
+!
+interface lo
+	ip address 1.1.1.4/32
+	! Enable ospf for interface
+	ip ospf area 0
+
+!
+! Enable BGP
+!
+router bgp 1
+	! Configure internal session with the route reflector
+	neighbor 1.1.1.1 remote-as 1
+	! Specify address to use for the BGP session
+	neighbor 1.1.1.1 update-source lo
+	! Configuration BGP EVPN options
+	address-family l2vpn evpn
+		! Enable information exchange with BGP neighbor
+		neighbor 1.1.1.1 activate
+		! Enable EVPN
+		advertise-all-vni
+	exit-address-family
+
+!
+! Enable OSPF
+!
+router ospf
