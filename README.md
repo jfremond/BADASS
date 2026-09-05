@@ -1,4 +1,4 @@
-# BADASS - BGP At Doors of Autonomous Systems is Simple
+# BADASS - BGP At Doors of Autonomous Systems is Simple - by [bbrassar](https://github.com/benjaminbrassart) and [jfremond](https://github.com/jfremond)
 
 > A 42 network administration project where we simulate a small data center
 > network with **GNS3**, **Docker**, **VXLAN**, and **BGP EVPN**.
